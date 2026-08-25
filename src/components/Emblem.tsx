@@ -1,0 +1,26 @@
+interface EmblemProps {
+  size?: number;
+  className?: string;
+}
+
+export default function Emblem({ size = 40, className }: EmblemProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 64 64"
+      role="img"
+      aria-label="Emblème 72ème ANDRIAMPIROKANA"
+      className={className}
+    >
+      <circle cx="32" cy="32" r="30" fill="#111111" />
+      <circle cx="32" cy="32" r="25" fill="#FFE100" />
+      <g fill="#111111">
+        <path d="M32 14c-2 5-3 8-3 11 0 2 1 3 3 3s3-1 3-3c0-3-1-6-3-11z" />
+        <path d="M32 26c-6 2-10 6-10 11 0 0 7-2 10-6 3 4 10 6 10 6 0-5-4-9-10-11z" />
+        <rect x="30.5" y="36" width="3" height="12" rx="1.5" />
+        <path d="M24 48h16l-2 4H26z" />
+      </g>
+    </svg>
+  );
+}
