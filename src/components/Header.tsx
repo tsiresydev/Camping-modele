@@ -1,4 +1,5 @@
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
+import { Users } from "lucide-react";
 import Emblem from "./Emblem";
 
 export default function Header() {
@@ -18,9 +19,28 @@ export default function Header() {
         </Link>
 
         <nav className="flex items-center gap-4 text-sm font-medium text-scout-black/80">
-          <a href="/#documents" className="hidden hover:text-scout-black sm:inline">
+          <NavLink
+            to="/"
+            end
+            className={({ isActive }) =>
+              `hidden hover:text-scout-black sm:inline ${
+                isActive ? "text-scout-black" : ""
+              }`
+            }
+          >
             Documents
-          </a>
+          </NavLink>
+          <NavLink
+            to="/chefs"
+            className={({ isActive }) =>
+              `hidden items-center gap-1.5 hover:text-scout-black sm:inline-flex ${
+                isActive ? "text-scout-black" : ""
+              }`
+            }
+          >
+            <Users className="h-4 w-4" />
+            Chefs
+          </NavLink>
           <a href="/#documents" className="btn-primary px-4 py-2 text-sm">
             Télécharger
           </a>

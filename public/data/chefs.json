@@ -1,0 +1,143 @@
+{
+  "root": {
+    "nom": "72ème ANDRIAMPIROKANA",
+    "avatar": ""
+  },
+  "leaders": [
+    {
+      "id": "tonia-1",
+      "nom": "Chef Zo",
+      "telephone": "034 91 392 67",
+      "fonction": "TONIA 1",
+      "avatar": "/assets/images/chefs/zo.PNG"
+    },
+    {
+      "id": "tonia-2",
+      "nom": "Chef Safidy",
+      "telephone": "034 40 587 20",
+      "fonction": "TONIA 1",
+      "avatar": "/assets/images/chefs/safidy.JPG"
+    }
+  ],
+  "branches": [
+    {
+      "id": "mavo",
+      "nom": "SAMPANA MAVO",
+      "couleur": "#FFE100",
+      "members": [
+        {
+          "id": "mavo-01",
+          "nom": "Cheftaine Annie",
+          "telephone": "",
+          "fonction": "Akela",
+          "avatar": "/assets/images/chefs/annie.PNG"
+        },
+        {
+          "id": "mavo-02",
+          "nom": "Cheftaine Malala",
+          "telephone": "",
+          "fonction": "Bagheera",
+          "avatar": "/assets/images/chefs/malala.png"
+        },
+        {
+          "id": "mavo-03",
+          "nom": "Cheftaine Fanilo",
+          "telephone": "",
+          "fonction": "Balou",
+          "avatar": "/assets/images/chefs/fanilo.PNG"
+        }
+      ]
+    },
+    {
+      "id": "maintso",
+      "nom": "SAMPANA MAINTSO",
+      "couleur": "#22C55E",
+      "members": [
+        {
+          "id": "maintso-01",
+          "nom": "Chef Joël",
+          "telephone": "034 94 970 58",
+          "fonction": "MP1",
+          "avatar": "/assets/images/chefs/joel.jpg"
+        },
+        {
+          "id": "maintso-02",
+          "nom": "Chef Karl",
+          "telephone": "034 99 666 41",
+          "fonction": "MP2",
+          "avatar": "/assets/images/chefs/karl.PNG"
+        },
+        {
+          "id": "maintso-03",
+          "nom": "Chef Solofo",
+          "telephone": "",
+          "fonction": "MP3",
+          "avatar": ""
+        }
+      ]
+    },
+    {
+      "id": "manga",
+      "nom": "SAMPANA MANGA",
+      "couleur": "#3B82F6",
+      "members": [
+        {
+          "id": "manga-01",
+          "nom": "Chef Tsiresy",
+          "telephone": "034 88 099 77",
+          "fonction": "MP1",
+          "avatar": "/assets/images/chefs/tsiresy.jpg"
+        },
+        {
+          "id": "manga-02",
+          "nom": "Chef Princy",
+          "telephone": "038 77 423 21",
+          "fonction": "MP2",
+          "avatar": "/assets/images/chefs/princy.JPG"
+        },
+        {
+          "id": "manga-03",
+          "nom": "Chef Naval",
+          "telephone": "038 73 633 60",
+          "fonction": "MP3",
+          "avatar": "/assets/images/chefs/naval.PNG"
+        },
+        {
+          "id": "manga-04",
+          "nom": "Chef Tahiana",
+          "telephone": "034 11 239 76",
+          "fonction": "MP4",
+          "avatar": "/assets/images/chefs/tahina.PNG"
+        }
+      ]
+    },
+    {
+      "id": "mena",
+      "nom": "SAMPANA MENA",
+      "couleur": "#EF4444",
+      "members": [
+        {
+          "id": "mena-01",
+          "nom": "Chef Rado",
+          "telephone": "034 57 084 52",
+          "fonction": "MP1",
+          "avatar": ""
+        },
+        {
+          "id": "mena-02",
+          "nom": "Chef Mickaël",
+          "telephone": "034 49 697 36",
+          "fonction": "MP2",
+          "avatar": "/assets/images/chefs/mickael.PNG"
+        },
+        {
+          "id": "mena-03",
+          "nom": "Chef Allan",
+          "telephone": "",
+          "fonction": "MP3",
+          "avatar": "/assets/images/chefs/allan.PNG"
+        }
+      ]
+    }
+  ]
+}
