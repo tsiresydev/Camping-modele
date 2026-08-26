@@ -47,7 +47,7 @@ export default function ChefTooltip({ info, x, y }: ChefTooltipProps) {
     <div
       ref={ref}
       style={{ left: pos.left, top: pos.top, width: WIDTH }}
-      className="pointer-events-none fixed z-[1000] rounded-2xl border border-scout-gray-border bg-white p-4 text-center shadow-card-hover animate-fade-up"
+      className="pointer-events-none fixed z-[1000] flex flex-col items-center rounded-2xl border border-scout-gray-border bg-white p-4 text-center shadow-card-hover animate-fade-up"
       role="tooltip"
     >
       <Avatar src={info.avatar} nom={info.nom} size={64} ringClass="ring-2 ring-offset-2" />
