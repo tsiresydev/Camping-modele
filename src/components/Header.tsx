@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
-import { Users, Menu, X } from "lucide-react";
+import { Users, Menu, X, FileText } from "lucide-react";
 import Emblem from "./Emblem";
 
 export default function Header() {
@@ -24,9 +24,12 @@ export default function Header() {
             to="/"
             end
             className={({ isActive }) =>
-              `hover:text-scout-black ${isActive ? "text-scout-black" : ""}`
+              `flex items-center gap-1.5 hover:text-scout-black ${
+                isActive ? "text-scout-black" : ""
+              }`
             }
           >
+            <FileText className="h-4 w-4" />
             Documents
           </NavLink>
           <NavLink
@@ -40,15 +43,9 @@ export default function Header() {
             <Users className="h-4 w-4" />
             Chefs
           </NavLink>
-          <a href="/#documents" className="btn-primary px-4 py-2 text-sm">
-            Télécharger
-          </a>
         </nav>
 
-        <div className="flex items-center gap-2 sm:hidden">
-          <a href="/#documents" className="btn-primary px-3 py-2 text-sm">
-            Télécharger
-          </a>
+        <div className="sm:hidden">
           <button
             type="button"
             onClick={() => setOpen((v) => !v)}
@@ -69,11 +66,12 @@ export default function Header() {
               end
               onClick={() => setOpen(false)}
               className={({ isActive }) =>
-                `rounded-lg px-3 py-2 text-sm font-medium hover:bg-scout-gray-light ${
+                `flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium hover:bg-scout-gray-light ${
                   isActive ? "bg-scout-gray-light text-scout-black" : "text-scout-black/80"
                 }`
               }
             >
+              <FileText className="h-4 w-4" />
               Documents
             </NavLink>
             <NavLink
