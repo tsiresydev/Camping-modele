@@ -158,7 +158,7 @@ export default function Sareba() {
           <div className="mx-auto max-w-5xl px-4 py-12 text-center sm:px-6 sm:py-16">
             <span className="inline-flex items-center gap-2 rounded-full border border-scout-yellow/60 bg-scout-yellow/15 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-scout-black">
               <Music className="h-4 w-4" />
-              Saréba
+              Sareba
             </span>
             <h1 className="mx-auto mt-6 max-w-3xl text-3xl font-extrabold text-scout-black sm:text-4xl">
               Notre bibliothèque musicale
