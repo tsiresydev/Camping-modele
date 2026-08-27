@@ -21,11 +21,17 @@ export function EmptyState() {
   );
 }
 
-export function ErrorState({ onRetry }: { onRetry?: () => void }) {
+export function ErrorState({
+  onRetry,
+  message,
+}: {
+  onRetry?: () => void;
+  message?: string;
+}) {
   return (
     <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-red-200 bg-red-50 py-16 text-center text-red-700">
       <AlertTriangle className="h-8 w-8" />
-      <p className="font-medium">Impossible de charger les documents.</p>
+      <p className="font-medium">{message ?? "Impossible de charger les documents."}</p>
       <p className="text-sm text-red-600/80">
         Une erreur est survenue. Veuillez réessayer.
       </p>
