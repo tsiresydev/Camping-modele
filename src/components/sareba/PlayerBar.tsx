@@ -40,7 +40,7 @@ export default function PlayerBar({
   if (!current) return null;
 
   return (
-    <div className="fixed inset-x-0 bottom-0 z-40 border-t border-white/10 bg-scout-black px-4 py-3 text-white shadow-2xl">
+    <div className="fixed inset-x-0 bottom-0 z-40 border-t border-white/10 bg-scout-black px-4 py-3 text-white shadow-2xl pb-[max(0.75rem,env(safe-area-inset-bottom))]">
       <div className="mx-auto flex max-w-5xl flex-col gap-3 sm:flex-row sm:items-center">
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-semibold">{current.title}</p>
