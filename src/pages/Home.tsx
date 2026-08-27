@@ -1,25 +1,9 @@
-import { useEffect, useState } from "react";
 import Header from "../components/Header";
 import Hero from "../components/Hero";
-import DocumentGrid, { type GridStatus } from "../components/DocumentGrid";
+import DocumentsExplorer from "../components/documents/DocumentsExplorer";
 import Footer from "../components/Footer";
-import { documents } from "../data/documents";
 
 export default function Home() {
-  const [status, setStatus] = useState<GridStatus>("loading");
-
-  useEffect(() => {
-    const t = window.setTimeout(() => {
-      setStatus(documents.length > 0 ? "ready" : "empty");
-    }, 500);
-    return () => window.clearTimeout(t);
-  }, []);
-
-  function handleRetry() {
-    setStatus("loading");
-    window.setTimeout(() => setStatus(documents.length > 0 ? "ready" : "empty"), 500);
-  }
-
   return (
     <div className="flex min-h-screen flex-col">
       <Header />
@@ -32,11 +16,12 @@ export default function Home() {
               Modèles de documents
             </h2>
             <p className="mx-auto mt-3 max-w-xl text-scout-black/70">
-              Sélectionnez un document puis téléchargez-le en un seul clic.
+              Recherchez et téléchargez les modèles nécessaires à la préparation de
+              vos camps et pré-camps.
             </p>
           </div>
 
-          <DocumentGrid status={status} documents={documents} onRetry={handleRetry} />
+          <DocumentsExplorer />
         </section>
       </main>
       <Footer />

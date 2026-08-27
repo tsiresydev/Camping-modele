@@ -1,42 +1,63 @@
-export interface ScoutDocument {
-  slug: string;
-  title: string;
-  description: string;
-  file: string;
-  type: "PDF";
-  size?: string;
+import { useEffect, useState } from "react";
+
+export interface AppDocument {
+  id: string;
+  name: string;
+  fileName: string;
+  url: string;
+  ext: string;
+  type: string;
 }
 
-export const documents: ScoutDocument[] = [
-  {
-    slug: "pre-camp",
-    title: "Autorisation de faire un pré-camp",
-    description:
-      "Modèle permettant d'obtenir l'accord nécessaire auprès de l'association pour organiser un pré-camp.",
-    file: "/modele/FAHAZAHON-DALANA HANAO PRE-CAMP.pdf",
-    type: "PDF",
-    size: "120 Ko",
-  },
-  {
-    slug: "proprietaire-terrain",
-    title: "Autorisation du propriétaire du terrain",
-    description:
-      "Modèle permettant d'obtenir l'accord écrit du propriétaire du terrain sur lequel le camp sera installé.",
-    file: "/modele/FANOMEZAN-DALANA-TOMPON-TOERANA-PRE-CAMPS.pdf",
-    type: "PDF",
-    size: "115 Ko",
-  },
-  {
-    slug: "camper",
-    title: "Autorisation de camper",
-    description:
-      "Modèle permettant d'obtenir l'autorisation officielle d'organiser et de mener à bien le camp scout.",
-    file: "/modele/FAHAZAHON-DALANA HILASY.pdf",
-    type: "PDF",
-    size: "118 Ko",
-  },
-];
+const rawFiles = import.meta.glob("/src/assets/documents/*", {
+  eager: true,
+  query: "?url",
+  import: "default",
+}) as Record<string, string>;
 
-export function getDocumentBySlug(slug: string): ScoutDocument | undefined {
-  return documents.find((doc) => doc.slug === slug);
+const TITLE_OVERRIDES: Record<string, string> = {
+  "FAHAZAHON-DALANA HANAO PRE-CAMP.pdf": "Autorisation de faire un pré-camp",
+  "FAHAZAHON-DALANA HILASY.pdf": "Autorisation de camper",
+  "FANOMEZAN-DALANA-TOMPON-TOERANA-PRE-CAMPS.pdf":
+    "Autorisation du propriétaire du terrain",
+};
+
+function slugify(value: string): string {
+  return value
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+function buildDocuments(): AppDocument[] {
+  return Object.entries(rawFiles)
+    .map(([path, url]) => {
+      const fileName = path.split("/").pop() ?? path;
+      const ext = fileName.includes(".") ? fileName.split(".").pop()!.toLowerCase() : "";
+      const base = fileName.replace(/\.[^.]+$/, "");
+      return {
+        id: slugify(base),
+        name: TITLE_OVERRIDES[fileName] ?? base,
+        fileName,
+        url,
+        ext,
+        type: ext.toUpperCase(),
+      };
+    })
+    .sort((a, b) => a.name.localeCompare(b.name, "fr"));
+}
+
+export const documents: AppDocument[] = buildDocuments();
+
+export function getDocumentBySlug(id: string): AppDocument | undefined {
+  return documents.find((d) => d.id === id);
+}
+
+export function useDocuments() {
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    const t = window.setTimeout(() => setLoading(false), 350);
+    return () => window.clearTimeout(t);
+  }, []);
+  return { documents, loading };
 }

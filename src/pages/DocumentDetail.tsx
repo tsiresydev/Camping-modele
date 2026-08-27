@@ -1,5 +1,5 @@
 import { Link, useParams } from "react-router-dom";
-import { ArrowLeft, FileText, HardDrive } from "lucide-react";
+import { ArrowLeft, FileText } from "lucide-react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import DownloadButton from "../components/DownloadButton";
@@ -52,10 +52,8 @@ export default function DocumentDetail() {
             </span>
 
             <h1 className="mt-5 text-2xl font-bold text-scout-black sm:text-3xl">
-              {doc.title}
+              {doc.name}
             </h1>
-
-            <p className="mt-3 text-scout-black/70">{doc.description}</p>
 
             <dl className="mt-6 grid grid-cols-2 gap-4 border-t border-scout-gray-border pt-6 text-sm">
               <div>
@@ -63,18 +61,17 @@ export default function DocumentDetail() {
                 <dd className="mt-1 font-semibold text-scout-black">{doc.type}</dd>
               </div>
               <div>
-                <dt className="text-scout-black/50">Taille</dt>
-                <dd className="mt-1 flex items-center gap-1.5 font-semibold text-scout-black">
-                  <HardDrive className="h-4 w-4" />
-                  {doc.size ?? "—"}
+                <dt className="text-scout-black/50">Fichier</dt>
+                <dd className="mt-1 break-all font-semibold text-scout-black">
+                  {doc.fileName}
                 </dd>
               </div>
             </dl>
 
             <div className="mt-8">
               <DownloadButton
-                href={doc.file}
-                fileName={doc.title + ".pdf"}
+                href={doc.url}
+                fileName={doc.fileName}
                 label="Télécharger le document"
                 className="w-full"
               />
