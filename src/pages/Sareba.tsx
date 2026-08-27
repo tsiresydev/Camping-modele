@@ -34,6 +34,9 @@ export default function Sareba() {
   const audioRef = useRef<HTMLAudioElement>(null);
   const pendingPlay = useRef(false);
 
+  const PAGE_SIZE = 5;
+  const [visible, setVisible] = useState(PAGE_SIZE);
+
   useEffect(() => {
     let cancelled = false;
     setStatus("loading");
@@ -57,6 +60,11 @@ export default function Sareba() {
     if (!q) return musics;
     return musics.filter((m) => m.title.toLowerCase().includes(q));
   }, [musics, query]);
+
+  const visibleList = useMemo(
+    () => filtered.slice(0, visible),
+    [filtered, visible],
+  );
 
   function playItem(item: MusicItem) {
     if (current?.id === item.id) {
@@ -132,6 +140,16 @@ export default function Sareba() {
 
   const hasLyrics = Boolean(current?.lyrics || current?.lyricsId);
 
+  useEffect(() => {
+    setVisible(PAGE_SIZE);
+  }, [query, musics]);
+
+  function loadMore() {
+    setVisible((v) => Math.min(filtered.length, v + PAGE_SIZE));
+  }
+
+  const hasMore = visible < filtered.length;
+
   return (
     <div className="flex min-h-screen flex-col">
       <Header />
@@ -146,8 +164,8 @@ export default function Sareba() {
               Notre bibliothèque musicale
             </h1>
             <p className="mx-auto mt-4 max-w-2xl text-scout-black/70">
-              Écoutez les chants et musiques de la 72ème ANDRIAMPIROKANA, où que vous
-              soyez.
+              Écoutez les chants et musiques de la 72ème ANDRIAMPIROKANA, où que
+              vous soyez.
             </p>
           </div>
         </section>
@@ -155,9 +173,10 @@ export default function Sareba() {
         <section className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
           {demo && (
             <div className="mb-6 rounded-xl border border-scout-yellow/50 bg-scout-yellow/10 px-4 py-3 text-sm text-scout-black/80">
-              Mode démonstration : configurez <code>VITE_GOOGLE_DRIVE_API_KEY</code> et{" "}
-              <code>VITE_GOOGLE_DRIVE_FOLDER_ID</code> pour charger vos musiques depuis Google
-              Drive.
+              Mode démonstration : configurez{" "}
+              <code>VITE_GOOGLE_DRIVE_API_KEY</code> et{" "}
+              <code>VITE_GOOGLE_DRIVE_FOLDER_ID</code> pour charger vos musiques
+              depuis Google Drive.
             </div>
           )}
 
@@ -181,14 +200,14 @@ export default function Sareba() {
                 />
               </div>
 
-              {filtered.length === 0 ? (
+              {visibleList.length === 0 ? (
                 <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-scout-gray-border bg-scout-gray-light py-16 text-center text-scout-black/70">
                   <Music className="h-8 w-8 text-scout-yellow-dark" />
                   <p className="font-medium">Aucune musique trouvée.</p>
                 </div>
               ) : (
                 <div className="flex flex-col gap-3">
-                  {filtered.map((m) => (
+                  {visibleList.map((m) => (
                     <MusicRow
                       key={m.id}
                       music={m}
@@ -197,6 +216,20 @@ export default function Sareba() {
                       onToggle={playItem}
                     />
                   ))}
+                  {hasMore && (
+                    <div className="flex flex-col items-center gap-2 pt-4">
+                      <button
+                        type="button"
+                        onClick={loadMore}
+                        className="rounded-xl border-2 border-scout-black bg-white px-6 py-3 text-sm font-semibold text-scout-black transition hover:bg-scout-gray-light"
+                      >
+                        Charger plus
+                      </button>
+                      <p className="text-xs text-scout-black/50">
+                        {visible} / {filtered.length} musiques
+                      </p>
+                    </div>
+                  )}
                 </div>
               )}
             </>
