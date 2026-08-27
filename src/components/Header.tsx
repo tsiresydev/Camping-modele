@@ -15,7 +15,7 @@ export default function Header() {
             <span className="font-display text-sm font-bold text-scout-black sm:text-base">
               72ème ANDRIAMPIROKANA
             </span>
-            <span className="text-xs text-scout-black/60">Modèles de documents</span>
+            <span className="text-xs text-scout-black/60">Ressources &amp; documents scouts</span>
           </span>
         </Link>
 

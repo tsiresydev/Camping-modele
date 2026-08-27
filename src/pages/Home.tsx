@@ -13,11 +13,11 @@ export default function Home() {
         <section id="documents" className="mx-auto max-w-5xl px-4 py-14 sm:px-6 sm:py-20">
           <div className="mb-10 text-center">
             <h2 className="text-2xl font-bold text-scout-black sm:text-3xl">
-              Modèles de documents
+              Documents &amp; ressources
             </h2>
             <p className="mx-auto mt-3 max-w-xl text-scout-black/70">
-              Recherchez et téléchargez les modèles nécessaires à la préparation de
-              vos camps et pré-camps.
+              Recherchez, sélectionnez et téléchargez les documents et ressources
+              utiles à vos activités scoutes.
             </p>
           </div>
 

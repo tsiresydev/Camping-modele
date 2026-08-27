@@ -16,12 +16,12 @@ export default function Hero() {
         </span>
 
         <h1 className="mx-auto mt-6 max-w-3xl text-3xl font-extrabold leading-tight text-scout-black sm:text-4xl md:text-5xl">
-          Documents nécessaires pour organiser votre camp scout
+          Votre espace de ressources et de documents scouts
         </h1>
 
         <p className="mx-auto mt-5 max-w-2xl text-base text-scout-black/70 sm:text-lg">
-          Retrouvez facilement les modèles d'autorisations nécessaires à la
-          préparation de vos camps et pré-camps.
+          Retrouvez facilement les documents, modèles et ressources utiles à la
+          préparation et à l'organisation de vos activités scoutes.
         </p>
 
         <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">

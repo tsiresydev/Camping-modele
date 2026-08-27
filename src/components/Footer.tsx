@@ -9,8 +9,8 @@ export default function Footer() {
           72ème ANDRIAMPIROKANA
         </p>
         <p className="max-w-md text-xs text-white/60">
-          Plateforme officielle des modèles de documents pour l'organisation
-          des camps et pré-camps scouts.
+          Plateforme de ressources et de documents pour les activités scoutes
+          de la 72ème ANDRIAMPIROKANA.
         </p>
         <p className="text-xs text-white/40">
           © {new Date().getFullYear()} 72ème ANDRIAMPIROKANA. Tous droits réservés.
