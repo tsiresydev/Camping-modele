@@ -119,7 +119,7 @@ export default function Header() {
               }
             >
               <Music className="h-4 w-4" />
-              Saréba
+              Sareba
             </NavLink>
           </div>
         </nav>

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Music } from "lucide-react";
 import { registerSW } from "virtual:pwa-register";
 
@@ -44,8 +44,10 @@ export function usePWA() {
     };
   }, []);
 
+  const updateSWRef = useRef<(reload?: boolean) => void>(() => {});
+
   useEffect(() => {
-    const updateSW = registerSW({
+    updateSWRef.current = registerSW({
       onNeedRefresh() {
         setShowUpdateAvailable(true);
       },
@@ -53,9 +55,6 @@ export function usePWA() {
         console.log("PWA prête pour le mode hors ligne");
       },
     });
-    return () => {
-      updateSW(true);
-    };
   }, []);
 
   const handleInstallClick = async () => {
@@ -66,6 +65,12 @@ export function usePWA() {
     setDeferredPrompt(null);
   };
 
+  const handleUpdateClick = () => {
+    setShowUpdateAvailable(false);
+    updateSWRef.current(true);
+    setTimeout(() => window.location.reload(), 400);
+  };
+
   return {
     isOnline,
     showInstallPrompt,
@@ -73,6 +78,7 @@ export function usePWA() {
     showUpdateAvailable,
     setShowUpdateAvailable,
     handleInstallClick,
+    handleUpdateClick,
   };
 }
 
@@ -86,7 +92,9 @@ export default function PWAProvider({
     showInstallPrompt,
     setShowInstallPrompt,
     showUpdateAvailable,
+    setShowUpdateAvailable,
     handleInstallClick,
+    handleUpdateClick,
   } = usePWA();
 
   const onlineClasses = "bg-scout-yellow text-scout-black";
@@ -163,12 +171,20 @@ export default function PWAProvider({
               </p>
             </div>
           </div>
-          <button
-            onClick={() => window.location.reload()}
-            className="mt-3 rounded-xl border border-scout-black bg-white px-4 py-2 text-sm font-semibold text-scout-black transition hover:bg-scout-gray-light"
-          >
-            Mettre à jour
-          </button>
+          <div className="mt-3 flex gap-3">
+            <button
+              onClick={handleUpdateClick}
+              className="rounded-xl border border-scout-black bg-white px-4 py-2 text-sm font-semibold text-scout-black transition hover:bg-scout-gray-light"
+            >
+              Mettre à jour
+            </button>
+            <button
+              onClick={() => setShowUpdateAvailable(false)}
+              className="rounded-xl border border-scout-gray-border px-4 py-2 text-sm text-scout-black/60 transition"
+            >
+              Plus tard
+            </button>
+          </div>
         </div>
       )}
 
