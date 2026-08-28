@@ -41,6 +41,7 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2}"],
+        globIgnores: ["**/backgorund-association-*.png"],
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
@@ -123,6 +124,20 @@ export default defineConfig({
                 maxAgeSeconds: 60 * 60,
               },
               networkTimeoutSeconds: 10,
+              cacheableResponse: {
+                statuses: [0, 200],
+              },
+            },
+          },
+          {
+            urlPattern: /\/assets\/backgorund-association-.*\.png$/i,
+            handler: "CacheFirst",
+            options: {
+              cacheName: "hero-image-cache",
+              expiration: {
+                maxEntries: 1,
+                maxAgeSeconds: 60 * 60 * 24 * 30,
+              },
               cacheableResponse: {
                 statuses: [0, 200],
               },
