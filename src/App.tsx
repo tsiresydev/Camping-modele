@@ -10,7 +10,7 @@ export default function App() {
     <PWAProvider>
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/document/:slug" element={<DocumentDetail />} />
+        <Route path="/document/:id" element={<DocumentDetail />} />
         <Route path="/chefs" element={<Chefs />} />
         <Route path="/sareba" element={<Sareba />} />
         <Route path="*" element={<Navigate to="/" replace />} />

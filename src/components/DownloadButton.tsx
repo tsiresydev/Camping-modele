@@ -10,6 +10,24 @@ interface DownloadButtonProps {
 
 type Status = "idle" | "loading" | "done" | "error";
 
+function triggerDownload(href: string, fileName: string) {
+  const link = document.createElement("a");
+  link.href = href;
+  link.download = fileName;
+  link.style.display = "none";
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+}
+
+function isCrossOrigin(url: string): boolean {
+  try {
+    return new URL(url, window.location.href).origin !== window.location.origin;
+  } catch {
+    return false;
+  }
+}
+
 export default function DownloadButton({
   href,
   label = "Télécharger",
@@ -18,44 +36,27 @@ export default function DownloadButton({
 }: DownloadButtonProps) {
   const [status, setStatus] = useState<Status>("idle");
 
-  function handleClick() {
+  async function handleClick() {
     if (status === "loading") return;
     setStatus("loading");
-    const encoded = href.replace(/ /g, "%20");
-    const link = document.createElement("a");
-    link.href = encoded;
-    link.download = fileName;
-    link.style.display = "none";
-
-    const cleanup = () => {
-      window.removeEventListener("blur", onBlur);
-      link.remove();
-    };
-    const onBlur = () => {
-      setStatus("done");
-      window.setTimeout(() => setStatus("idle"), 2000);
-      cleanup();
-    };
-
-    link.addEventListener("click", () => {
-      window.setTimeout(() => {
-        if (document.visibilityState === "hidden") return;
-      }, 0);
-    });
 
     try {
-      document.body.appendChild(link);
-      link.click();
-      window.addEventListener("blur", onBlur);
-      window.setTimeout(() => {
-        setStatus((s) => (s === "loading" ? "done" : s));
-        window.setTimeout(() => setStatus("idle"), 2000);
-        cleanup();
-      }, 1500);
+      const encoded = href.replace(/ /g, "%20");
+      if (isCrossOrigin(encoded)) {
+        const res = await fetch(encoded);
+        if (!res.ok) throw new Error("download failed");
+        const blob = await res.blob();
+        const objUrl = URL.createObjectURL(blob);
+        triggerDownload(objUrl, fileName);
+        window.setTimeout(() => URL.revokeObjectURL(objUrl), 1000);
+      } else {
+        triggerDownload(encoded, fileName);
+      }
+      setStatus("done");
     } catch {
       setStatus("error");
+    } finally {
       window.setTimeout(() => setStatus("idle"), 2500);
-      cleanup();
     }
   }
 
@@ -91,7 +92,11 @@ export default function DownloadButton({
   }
 
   return (
-    <button type="button" onClick={handleClick} className={base + " bg-scout-yellow text-scout-black shadow-btn hover:bg-scout-yellow-dark hover:shadow-lg"}>
+    <button
+      type="button"
+      onClick={handleClick}
+      className={base + " bg-scout-yellow text-scout-black shadow-btn hover:bg-scout-yellow-dark hover:shadow-lg"}
+    >
       <Download className="h-5 w-5" />
       {label}
     </button>

@@ -1,16 +1,50 @@
+import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { ArrowLeft, FileText } from "lucide-react";
+import { ArrowLeft, FileText, Loader2 } from "lucide-react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import DownloadButton from "../components/DownloadButton";
 import { NoMatch } from "../components/States";
-import { getDocumentBySlug } from "../data/documents";
+import { fetchDocumentById, type AppDocument } from "../services/driveDocuments";
 
 export default function DocumentDetail() {
-  const { slug } = useParams<{ slug: string }>();
-  const doc = slug ? getDocumentBySlug(slug) : undefined;
+  const { id } = useParams<{ id: string }>();
+  const [doc, setDoc] = useState<AppDocument | null | undefined>(undefined);
 
-  if (!doc) {
+  useEffect(() => {
+    let cancelled = false;
+    setDoc(undefined);
+    if (!id) {
+      setDoc(null);
+      return;
+    }
+    fetchDocumentById(id)
+      .then((d) => {
+        if (!cancelled) setDoc(d ?? null);
+      })
+      .catch(() => {
+        if (!cancelled) setDoc(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [id]);
+
+  if (doc === undefined) {
+    return (
+      <div className="flex min-h-screen flex-col">
+        <Header />
+        <main className="flex-1">
+          <div className="mx-auto flex max-w-3xl items-center justify-center px-4 py-24 text-scout-black/60">
+            <Loader2 className="h-6 w-6 animate-spin" />
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (doc === null) {
     return (
       <div className="flex min-h-screen flex-col">
         <Header />
@@ -18,7 +52,7 @@ export default function DocumentDetail() {
           <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6">
             <NoMatch
               title="Document introuvable"
-              message="Le modèle demandé n'existe pas ou a été déplacé."
+              message="Le document demandé n'existe pas ou a été supprimé."
             />
             <div className="mt-8 text-center">
               <Link to="/" className="btn-ghost">

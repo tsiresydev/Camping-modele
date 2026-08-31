@@ -3,10 +3,10 @@ import { Search, FileSearch, Download, Loader2, AlertTriangle } from "lucide-rea
 import JSZip from "jszip";
 import { useDocuments } from "../../data/documents";
 import DocumentRow from "./DocumentRow";
-import { EmptyState } from "../States";
+import { LoadingState, EmptyState, ErrorState } from "../States";
 
 export default function DocumentsExplorer() {
-  const { documents, loading } = useDocuments();
+  const { documents, loading, error, demo } = useDocuments();
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [zipping, setZipping] = useState(false);
@@ -95,27 +95,26 @@ export default function DocumentsExplorer() {
   }
 
   if (loading) {
-    return (
-      <div>
-        <div className="mb-8 h-12 max-w-md animate-pulse rounded-xl bg-scout-gray-light" />
-        <div className="flex flex-col gap-3">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <div
-              key={i}
-              className="h-20 animate-pulse rounded-2xl border border-scout-gray-border bg-scout-gray-light"
-            />
-          ))}
-        </div>
-      </div>
-    );
+    return <LoadingState />;
   }
 
-  if (documents.length === 0) {
-    return <EmptyState />;
+  if (error) {
+    return (
+      <ErrorState message="Impossible de récupérer les documents pour le moment." />
+    );
   }
 
   return (
     <div>
+      {demo && (
+        <div className="mb-6 rounded-xl border border-scout-yellow/50 bg-scout-yellow/10 px-4 py-3 text-sm text-scout-black/80">
+          Mode démonstration : configurez{" "}
+          <code>VITE_GOOGLE_DRIVE_API_KEY</code> et{" "}
+          <code>VITE_GOOGLE_DRIVE_DOCUMENTS_FOLDER_ID</code> pour charger vos
+          documents depuis Google Drive.
+        </div>
+      )}
+
       <div className="relative mb-6 max-w-md">
         <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-scout-black/40" />
         <input
@@ -176,14 +175,18 @@ export default function DocumentsExplorer() {
       )}
 
       {filtered.length === 0 ? (
-        <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-scout-gray-border bg-scout-gray-light py-16 text-center text-scout-black/70">
-          <FileSearch className="h-8 w-8 text-scout-yellow-dark" />
-          <p className="font-medium">Aucun document trouvé pour :</p>
-          <p className="text-scout-black">« {query} »</p>
-          <button onClick={() => setQuery("")} className="btn-ghost mt-2">
-            Réinitialiser la recherche
-          </button>
-        </div>
+        documents.length === 0 ? (
+          <EmptyState />
+        ) : (
+          <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-scout-gray-border bg-scout-gray-light py-16 text-center text-scout-black/70">
+            <FileSearch className="h-8 w-8 text-scout-yellow-dark" />
+            <p className="font-medium">Aucun document trouvé pour :</p>
+            <p className="text-scout-black">« {query} »</p>
+            <button onClick={() => setQuery("")} className="btn-ghost mt-2">
+              Réinitialiser la recherche
+            </button>
+          </div>
+        )
       ) : (
         <div className="flex flex-col gap-3">
           {filtered.map((doc) => (
