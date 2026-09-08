@@ -4,6 +4,7 @@ import Home from "./pages/Home";
 import DocumentDetail from "./pages/DocumentDetail";
 import Chefs from "./pages/Chefs";
 import Sareba from "./pages/Sareba";
+import Techniques from "./pages/Techniques";
 
 export default function App() {
   return (
@@ -13,6 +14,7 @@ export default function App() {
         <Route path="/document/:id" element={<DocumentDetail />} />
         <Route path="/chefs" element={<Chefs />} />
         <Route path="/sareba" element={<Sareba />} />
+        <Route path="/techniques" element={<Techniques />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </PWAProvider>

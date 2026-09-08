@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
-import { Users, Menu, X, FileText, Music } from "lucide-react";
+import { Users, Menu, X, FileText, Music, Radio } from "lucide-react";
 import Emblem from "./Emblem";
 
 export default function Header() {
@@ -60,6 +60,17 @@ export default function Header() {
             <Music className="h-4 w-4" />
             Sareba
           </NavLink>
+          <NavLink
+            to="/techniques"
+            className={({ isActive }) =>
+              `flex items-center gap-1.5 hover:text-scout-black ${
+                isActive ? "text-scout-black" : ""
+              }`
+            }
+          >
+            <Radio className="h-4 w-4" />
+            Techniques
+          </NavLink>
         </nav>
 
         <div className="sm:hidden">
@@ -107,21 +118,35 @@ export default function Header() {
               <Users className="h-4 w-4" />
               Chefs
             </NavLink>
-            <NavLink
-              to="/sareba"
-              onClick={() => setOpen(false)}
-              className={({ isActive }) =>
-                `flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium hover:bg-scout-gray-light ${
-                  isActive
-                    ? "bg-scout-gray-light text-scout-black"
-                    : "text-scout-black/80"
-                }`
-              }
-            >
-              <Music className="h-4 w-4" />
-              Sareba
-            </NavLink>
-          </div>
+<NavLink
+            to="/sareba"
+            onClick={() => setOpen(false)}
+            className={({ isActive }) =>
+              `flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium hover:bg-scout-gray-light ${
+                isActive
+                  ? "bg-scout-gray-light text-scout-black"
+                  : "text-scout-black/80"
+              }`
+            }
+          >
+            <Music className="h-4 w-4" />
+            Sareba
+          </NavLink>
+          <NavLink
+            to="/techniques"
+            onClick={() => setOpen(false)}
+            className={({ isActive }) =>
+              `flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium hover:bg-scout-gray-light ${
+                isActive
+                  ? "bg-scout-gray-light text-scout-black"
+                  : "text-scout-black/80"
+              }`
+            }
+          >
+            <Radio className="h-4 w-4" />
+            Techniques
+          </NavLink>
+        </div>
         </nav>
       )}
     </header>

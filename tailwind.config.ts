@@ -5,10 +5,11 @@ export default {
   theme: {
     extend: {
       colors: {
-        scout: {
+          scout: {
           yellow: "#FFE100",
           "yellow-dark": "#E6C700",
           black: "#111111",
+          red: "#E53E3E",
           "gray-light": "#F4F4F5",
           "gray-border": "#E4E4E7",
         },
