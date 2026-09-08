@@ -1,7 +1,7 @@
 const env = import.meta.env as unknown as Record<string, string | undefined>;
 
 const API_KEY = env.VITE_GOOGLE_DRIVE_API_KEY;
-const FOLDER_ID = env.VITE_GOOGLE_DRIVE_FOLDER_ID;
+const FOLDER_ID = env.VITE_GOOGLE_DRIVE_MUSIC_ID;
 
 export interface MusicItem {
   id: string;
