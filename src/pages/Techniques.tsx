@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Radio } from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { Radio, Play, Pause, Square } from "lucide-react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { scoutCodes, ScoutCode } from "./techniques/codes";
@@ -26,6 +26,17 @@ export default function Techniques() {
   const [morseOutput, setMorseOutput] = useState("");
   const [morseMode, setMorseMode] = useState<"encode" | "decode">("encode");
   const [morseError, setMorseError] = useState<string | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
+  const [morseSpeedWpm, setMorseSpeedWpm] = useState(20);
+
+  // Audio refs
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const gainNodeRef = useRef<GainNode | null>(null);
+  const timeoutsRef = useRef<ReturnType<typeof setTimeout>[]>([]);
+  const startTimeRef = useRef(0);
+  const pausedAtRef = useRef(0);
+  const morseEventsRef = useRef<{ time: number; type: "on" | "off" }[]>([]);
 
   // State for substitution codes section
   const [substitutionInput, setSubstitutionInput] = useState("");
@@ -72,6 +83,153 @@ export default function Techniques() {
       setMorseOutput("");
     }
   };
+
+  // Morse audio playback
+  const getDotDuration = () => Math.max(20, Math.round(1200 / morseSpeedWpm));
+  const getDashDuration = () => getDotDuration() * 3;
+  const getElementGap = () => getDotDuration();
+  const getLetterGap = () => getDotDuration() * 3;
+  const getWordGap = () => getDotDuration() * 7;
+
+  const playMorseAudio = useCallback(() => {
+    if (!morseOutput || isPaused) return;
+
+    stopMorseAudio();
+
+    const audioContext = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
+    const gainNode = audioContext.createGain();
+    gainNode.connect(audioContext.destination);
+    gainNode.gain.value = 0.3;
+
+    audioContextRef.current = audioContext;
+    gainNodeRef.current = gainNode;
+
+    const events: { time: number; type: "on" | "off" }[] = [];
+    let currentTime = 0;
+
+    const DOT_DURATION = getDotDuration();
+    const DASH_DURATION = getDashDuration();
+    const ELEMENT_GAP = getElementGap();
+    const LETTER_GAP = getLetterGap();
+    const WORD_GAP = getWordGap();
+
+    const words = morseOutput.split(" / ");
+    words.forEach((_word, _wordIndex) => {
+      const letters = _word.trim().split(" ");
+      letters.forEach((letter, _letterIndex) => {
+        const symbols = letter.split("");
+        symbols.forEach((symbol, _symbolIndex) => {
+          if (symbol === ".") {
+            events.push({ time: currentTime, type: "on" });
+            currentTime += DOT_DURATION;
+            events.push({ time: currentTime, type: "off" });
+          } else if (symbol === "-") {
+            events.push({ time: currentTime, type: "on" });
+            currentTime += DASH_DURATION;
+            events.push({ time: currentTime, type: "off" });
+          }
+          currentTime += ELEMENT_GAP;
+        });
+        currentTime += LETTER_GAP - ELEMENT_GAP;
+      });
+      currentTime += WORD_GAP - LETTER_GAP;
+    });
+
+    events.pop();
+
+    const totalDuration = currentTime;
+    morseEventsRef.current = events;
+
+    const osc = audioContext.createOscillator();
+    osc.type = "sine";
+    osc.frequency.value = 700;
+    osc.connect(gainNode);
+    osc.start();
+    osc.stop(totalDuration / 1000 + 0.1);
+    (osc as unknown as { ref: AudioContext }).ref = audioContext;
+
+    const timeouts: ReturnType<typeof setTimeout>[] = [];
+    events.forEach((event) => {
+      const timeout = setTimeout(() => {
+        if (event.type === "on") {
+          gainNode.gain.value = 0.3;
+        } else {
+          gainNode.gain.value = 0;
+        }
+      }, event.time);
+      timeouts.push(timeout);
+    });
+
+    timeoutsRef.current = timeouts;
+    startTimeRef.current = Date.now();
+    setIsPlaying(true);
+    setIsPaused(false);
+  }, [morseOutput, isPaused, morseSpeedWpm]);
+
+  const pauseMorseAudio = useCallback(() => {
+    if (!audioContextRef.current) return;
+    timeoutsRef.current.forEach(clearTimeout);
+    timeoutsRef.current = [];
+    pausedAtRef.current = Date.now() - startTimeRef.current;
+    audioContextRef.current.close();
+    audioContextRef.current = null;
+    setIsPaused(true);
+  }, []);
+
+  const resumeMorseAudio = useCallback(() => {
+    if (!isPaused || !morseOutput) return;
+
+    const audioContext = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
+    const gainNode = audioContext.createGain();
+    gainNode.connect(audioContext.destination);
+    gainNode.gain.value = 0;
+
+    audioContextRef.current = audioContext;
+    gainNodeRef.current = gainNode;
+
+    const osc = audioContext.createOscillator();
+    osc.type = "sine";
+    osc.frequency.value = 700;
+    osc.connect(gainNode);
+
+    const events = morseEventsRef.current;
+    const remainingEvents = events.filter((e) => e.time >= pausedAtRef.current);
+    const timeouts: ReturnType<typeof setTimeout>[] = [];
+
+    remainingEvents.forEach((event) => {
+      const relativeTime = event.time - pausedAtRef.current;
+      const timeout = setTimeout(() => {
+        if (event.type === "on") {
+          gainNode.gain.value = 0.3;
+        } else {
+          gainNode.gain.value = 0;
+        }
+      }, relativeTime);
+      timeouts.push(timeout);
+    });
+
+    timeoutsRef.current = timeouts;
+    startTimeRef.current = Date.now() - pausedAtRef.current;
+    setIsPaused(false);
+  }, [isPaused, morseOutput]);
+
+  const stopMorseAudio = useCallback(() => {
+    timeoutsRef.current.forEach(clearTimeout);
+    timeoutsRef.current = [];
+    if (audioContextRef.current) {
+      audioContextRef.current.close();
+      audioContextRef.current = null;
+    }
+    gainNodeRef.current = null;
+    setIsPlaying(false);
+    setIsPaused(false);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      stopMorseAudio();
+    };
+  }, [stopMorseAudio]);
 
   // Build mapping from selected code
   const getSubstitutionMapping = (): Record<string, string> => {
@@ -206,14 +364,97 @@ export default function Techniques() {
                 </button>
               </div>
 
+              {/* Audio Controls */}
+              {morseOutput && morseMode === "encode" && (
+                <div className="mt-6 space-y-4">
+                  <div className="flex flex-wrap items-center justify-center gap-3">
+                    <label className="text-xs font-medium text-scout-black/70" htmlFor="morse-speed">
+                      Vitesse : {morseSpeedWpm} WPM
+                    </label>
+                    <input
+                      id="morse-speed"
+                      type="range"
+                      min={5}
+                      max={35}
+                      step={1}
+                      value={morseSpeedWpm}
+                      onChange={(e) => setMorseSpeedWpm(Number(e.target.value))}
+                      className="w-40 sm:w-56"
+                    />
+                  </div>
+
+                  <div className="flex flex-wrap items-center justify-center gap-2">
+                    {!isPlaying && (
+                      <button
+                        onClick={playMorseAudio}
+                        className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-scout-gray-border text-sm font-medium hover:bg-scout-gray-light transition-colors"
+                        aria-label="Lire le code Morse"
+                      >
+                        <Play className="h-4 w-4" />
+                        Lire
+                      </button>
+                    )}
+                    {isPlaying && !isPaused && (
+                      <button
+                        onClick={pauseMorseAudio}
+                        className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-scout-gray-border text-sm font-medium hover:bg-scout-gray-light transition-colors"
+                        aria-label="Mettre en pause"
+                      >
+                        <Pause className="h-4 w-4" />
+                        Pause
+                      </button>
+                    )}
+                    {isPaused && (
+                      <button
+                        onClick={resumeMorseAudio}
+                        className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-scout-gray-border text-sm font-medium hover:bg-scout-gray-light transition-colors"
+                        aria-label="Reprendre la lecture"
+                      >
+                        <Play className="h-4 w-4" />
+                        Reprendre
+                      </button>
+                    )}
+                    {isPlaying && (
+                      <button
+                        onClick={stopMorseAudio}
+                        className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-scout-gray-border text-sm font-medium hover:bg-scout-gray-light transition-colors"
+                        aria-label="Arrêter la lecture"
+                      >
+                        <Square className="h-4 w-4" />
+                        Arrêter
+                      </button>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+
               {/* Output */}
               {morseOutput && (
                 <div className="mt-6">
                   <h3 className="text-xl font-bold text-scout-black mb-3">
                     Résultat :
                   </h3>
-                  <div className="bg-scout-gray-light rounded-xl p-4 min-h-[60px] flex items-center justify-center text-lg font-mono text-scout-black">
-                    {morseOutput}
+                  <div className="bg-scout-gray-light rounded-xl p-4 min-h-[60px] flex items-center justify-center text-lg font-mono text-scout-black overflow-x-auto">
+                    <div className="inline-flex flex-wrap items-center gap-x-1.5 gap-y-2">
+                      {morseOutput.split("").map((char, index) => {
+                        const isSpace = char === " ";
+                        const isWordSep = char === "/";
+                        return (
+                          <span
+                            key={index}
+                            className="inline-block rounded"
+                            style={
+                              isSpace || isWordSep
+                                ? { width: "0.5em" }
+                                : undefined
+                            }
+                          >
+                            {isSpace ? "\u00A0" : char}
+                          </span>
+                        );
+                      })}
+                    </div>
                   </div>
                   {morseMode === "encode" && (
                     <p className="mt-3 text-xs text-scout-black/60 text-center">
@@ -223,9 +464,8 @@ export default function Techniques() {
                 </div>
               )}
             </div>
-          </div>
 
-          {/* Substitution Codes Section */}
+            {/* Substitution Codes Section */}
           <div className="mb-12">
             <h2 className="text-2xl font-bold text-scout-black mb-6">
               Codes par substitution
