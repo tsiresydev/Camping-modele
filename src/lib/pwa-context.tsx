@@ -103,7 +103,7 @@ export default function PWAProvider({
   return (
     <>
       <div
-        className={`fixed left-1/2 top-[4.5rem] z-40 flex -translate-x-1/2 items-center gap-3 rounded-full px-4 py-2 text-sm font-medium shadow-lg ${isOnline ? onlineClasses : offlineClasses}`}
+        className={`pointer-events-none fixed left-1/2 top-[4.5rem] z-40 flex -translate-x-1/2 items-center gap-3 rounded-full px-4 py-2 text-sm font-medium shadow-lg ${isOnline ? onlineClasses : offlineClasses}`}
       >
         <span
           className={`inline-block h-2.5 w-2.5 rounded-full ${isOnline ? "bg-scout-black" : "bg-red-500"}`}
@@ -114,7 +114,7 @@ export default function PWAProvider({
             <span>En ligne</span>
             <button
               onClick={() => setShowInstallPrompt(true)}
-              className="font-semibold text-scout-black/80 underline-offset-2 hover:underline"
+              className="pointer-events-auto font-semibold text-scout-black/80 underline-offset-2 hover:underline"
             >
               Installer
             </button>

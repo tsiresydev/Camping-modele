@@ -1,56 +1,88 @@
+import { useEffect } from "react";
 import { createPortal } from "react-dom";
-import { X, Loader2, AlertTriangle, Mic2 } from "lucide-react";
+import { X, Loader2, Mic2 } from "lucide-react";
 
 interface LyricsModalProps {
   title: string;
+  artist?: string;
   loading: boolean;
   error: boolean;
   text: string | null;
   onClose: () => void;
 }
 
-export default function LyricsModal({ title, loading, error, text, onClose }: LyricsModalProps) {
+export default function LyricsModal({
+  title,
+  artist,
+  loading,
+  error,
+  text,
+  onClose,
+}: LyricsModalProps) {
+  useEffect(() => {
+    function onKey(event: KeyboardEvent) {
+      if (event.key === "Escape") onClose();
+    }
+    document.addEventListener("keydown", onKey);
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = previous;
+    };
+  }, [onClose]);
+
   return createPortal(
     <div
-      className="fixed inset-0 z-[1000] flex items-end justify-center bg-scout-black/40 p-4 sm:items-center"
+      className="fixed inset-0 z-[1000] flex items-end justify-center bg-scout-black/70 p-4 backdrop-blur-sm sm:items-center"
       onClick={onClose}
     >
       <div
-        className="flex max-h-[80vh] w-full max-w-md animate-fade-up flex-col rounded-2xl border border-scout-gray-border bg-white shadow-card-hover"
+        role="dialog"
+        aria-modal="true"
+        aria-label={`Paroles de ${title}`}
+        className="flex max-h-[80vh] w-full max-w-md animate-screen-in flex-col overflow-hidden rounded-3xl bg-scout-black text-white shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between border-b border-scout-gray-border px-5 py-4">
-          <div className="flex items-center gap-2">
-            <Mic2 className="h-5 w-5 text-scout-black/70" />
-            <span className="font-display text-sm font-bold text-scout-black">Paroles</span>
+        <div className="flex items-center justify-between border-b border-white/10 px-5 py-4">
+          <div className="flex min-w-0 items-center gap-2.5">
+            <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-scout-yellow text-scout-black">
+              <Mic2 className="h-4 w-4" />
+            </span>
+            <span className="font-display text-sm font-bold">Paroles</span>
           </div>
           <button
             type="button"
             onClick={onClose}
             aria-label="Fermer"
-            className="rounded-full p-1 text-scout-black/40 transition-colors hover:bg-scout-gray-light hover:text-scout-black"
+            className="grid h-9 w-9 shrink-0 place-items-center rounded-full text-white/60 transition-colors hover:bg-white/10 hover:text-white"
           >
             <X className="h-5 w-5" />
           </button>
         </div>
 
-        <div className="overflow-y-auto px-5 py-5">
-          <p className="mb-4 text-sm font-semibold text-scout-black/70">{title}</p>
-          {loading ? (
-            <div className="flex items-center gap-2 text-scout-black/60">
-              <Loader2 className="h-5 w-5 animate-spin" />
-              Chargement des paroles…
-            </div>
-          ) : error ? (
-            <div className="flex items-center gap-2 text-red-600">
-              <AlertTriangle className="h-5 w-5" />
-              Impossible de charger les paroles.
-            </div>
-          ) : text === null ? (
-            <p className="text-scout-black/60">Paroles non disponibles.</p>
-          ) : (
-            <p className="whitespace-pre-line text-sm leading-relaxed text-scout-black/80">{text}</p>
-          )}
+        <div className="scroll-none overflow-y-auto px-5 py-5">
+          <p className="font-display text-lg font-extrabold leading-tight text-scout-yellow">
+            {title}
+          </p>
+          {artist && <p className="mt-1 text-xs text-scout-mist">{artist}</p>}
+
+          <div className="mt-5">
+            {loading ? (
+              <p className="flex items-center gap-2.5 text-sm text-white/70">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Chargement des paroles…
+              </p>
+            ) : error ? (
+              <p className="text-sm text-scout-red">
+                Impossible de charger les paroles pour le moment.
+              </p>
+            ) : text === null ? (
+              <p className="text-sm text-white/55">Paroles non disponibles.</p>
+            ) : (
+              <p className="whitespace-pre-line text-sm leading-relaxed text-white/85">{text}</p>
+            )}
+          </div>
         </div>
       </div>
     </div>,
