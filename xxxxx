@@ -1,0 +1,4 @@
+PORT=4000
+MONGODB_URI=mongodb+srv://tsiresydev_db_user:QYrOpzGJB6ticcTG@cluster0.yfvc4sa.mongodb.net/chatdb
+JWT_SECRET=dev-secret-change-me
+NODE_ENV=development
